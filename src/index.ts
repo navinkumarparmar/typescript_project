@@ -27,9 +27,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', routes);
 
 
-app.use("/api3",(req,res,next)=>{
-    res.send("api3 working is good")
-})
+
 setupSwagger(app);
 app.use(notFoundHandler)
 
