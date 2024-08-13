@@ -9,7 +9,7 @@ import { City } from '../models/city/cityinterface';
 
 const router = Router();
 
-router.post('/create', validationMiddleware(City), verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor']),CityController.createCity);
+router.post('/create', validationMiddleware(City), verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor','viewer']),CityController.createCity);
 
 router.delete('/delete/:id',verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor']),CityController.deleteCity);
 router.get('/list', verifytokenmiddlewere.verifytoken, verifytokenmiddlewere.verifyrole(['admin', 'editor']), CityController.list);
