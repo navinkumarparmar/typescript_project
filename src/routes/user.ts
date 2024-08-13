@@ -141,7 +141,7 @@ router.post('/verifyEmail', UserController.verifyEmail);
  *       500:
  *         description: Internal server error
  */
-router.get('/list', UserController.list);
+router.get('/list', verifytokenmiddlewere.verifytoken,UserController.list);
 
 
 router.delete('/delete/:id',verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor']),UserController.deleteUser);
