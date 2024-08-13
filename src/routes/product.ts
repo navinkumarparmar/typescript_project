@@ -11,7 +11,7 @@ import ProductController from '../controllers/product/product'
 // import { Product } from '../models/product/product.interface';
 const router = Router();
 
-router.post('/create',  verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin',]),ProductController.createProduct);
+router.post('/create',  verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin','editor']),ProductController.createProduct);
 
 router.put('/deleteitem/:id',verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor']),ProductController.deleteProductOne);
 
