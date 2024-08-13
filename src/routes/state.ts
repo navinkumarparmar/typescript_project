@@ -9,7 +9,7 @@ import { State } from '../models/state/state.interface';
 
 const router = Router();
 
-router.post('/create', validationMiddleware(State), StateController.createState);
+router.post('/create', validationMiddleware(State), verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor']),StateController.createState);
 
 router.delete('/delete/:id',verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor']),StateController.deleteState);
 router.get('/list', verifytokenmiddlewere.verifytoken, verifytokenmiddlewere.verifyrole(['admin', 'editor']), StateController.list);
