@@ -7,7 +7,7 @@ const URL = process.env.URL as string;
 console.log("url",URL)
 const connectDB = async (): Promise<void> => {
   try {
-    console.log("Connecting to database...");
+    console.log("Connecting to Database...");
     await mongoose.connect(URL);
     console.log('MongoDB connected');
   } catch (error: unknown) {
