@@ -16,7 +16,7 @@ const  router = Router();
 router.post('/create', validationMiddleware(Coustomer),verifytokenmiddlewere.verifytoken,CoustomerController.createCoustomer);
 
 router.delete('/delete/:id',verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor']),CoustomerController.deleteCoustomer);
-router.get('/list',CoustomerController.list);
+router.get('/list',verifytokenmiddlewere.verifytoken, verifytokenmiddlewere.verifyrole(['admin', 'editor','viewer']),CoustomerController.list);
 router.get('/list/:id',verifytokenmiddlewere.verifytoken, verifytokenmiddlewere.verifyrole(['admin', 'editor','viewer']),CoustomerController.listbyid);
 router.put('/update/:id',verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor']),CoustomerController.updateCoustomer);
 router.delete('/deleteitem',verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin','viewer']),CoustomerController.deleteOrder);
