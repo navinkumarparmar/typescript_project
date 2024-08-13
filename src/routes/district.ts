@@ -9,7 +9,7 @@ import { District } from '../models/district/districtinterface';
 
 const router = Router();
 
-router.post('/create', validationMiddleware(District), DistrictController.createDistrict);
+router.post('/create', validationMiddleware(District), verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor']),DistrictController.createDistrict);
 
 router.delete('/delete/:id',verifytokenmiddlewere.verifytoken,verifytokenmiddlewere.verifyrole(['admin', 'editor']),DistrictController.deleteDistrict);
 router.get('/list', verifytokenmiddlewere.verifytoken, verifytokenmiddlewere.verifyrole(['admin', 'editor']), DistrictController.list);
