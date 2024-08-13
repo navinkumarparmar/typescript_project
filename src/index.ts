@@ -18,7 +18,9 @@ app.use(passport.session());
 const PORT = 8080;
 connectDB();
 app.use(bodyParser.json());
-
+app.use('/',(req,res)=>{
+    res.send("api working is good")
+})
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
