@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+
+# Optional npm cache
+.npm/
+
+# Optional ESLint cache
+.eslintcache
