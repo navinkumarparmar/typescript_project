@@ -43,6 +43,7 @@ class UserController {
       return res.status(200).json({
         timeStamp: moment().unix(),
         message: 'User successfully created, OTP sent to email please verify',
+        data: user
       });
     } catch (error: any) {
       console.log(error.message);

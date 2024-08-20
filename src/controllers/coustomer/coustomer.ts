@@ -14,46 +14,52 @@ import { sendEmail } from '../../../src/transporter';
 
 class CoustomerController {
   public createCoustomer = async (req: Request, res: Response) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    // const session = await mongoose.startSession();
+    // session.startTransaction();
     try {
       const { ProductID, quantity } = req.body;
       const UserID = req.body.id;
   
       if (!mongoose.Types.ObjectId.isValid(ProductID)) {
-        await session.abortTransaction();
-        session.endSession();
+        // await session.abortTransaction();
+        // session.endSession();
         return res.status(400).json({ msg: "Invalid ID format" });
       }
   
-      const product = await Product.findById(ProductID).session(session);
+      const product = await Product.findById(ProductID)
+      // .session(session);
       console.log(product)
   
       if (!product) {
-        await session.abortTransaction();
-        session.endSession();
+        // await session.abortTransaction();
+        // session.endSession();
         return res.status(400).json({
           message: "Product not available",
         });
       }
   
       if (product.quantity < quantity) {
-        await session.abortTransaction();
-        session.endSession();
+        // await session.abortTransaction();
+        // session.endSession();
         return res.status(400).json({
           message: "Not enough stock available",
         });
       }
   
       const totalPrice = product.price * quantity;
-  
-      product.quantity -= quantity;
-      await product.save({ session });
+     console.log("product.quantity first",product.quantity)
+      let x = product.quantity -= quantity;
+      console.log("product.quantity second",product.quantity)
+      await product.save()
+
+      // ({ session });
   
       const coustomer = new Coustomer({ UserID, ProductID, quantity, totalPrice });
-      await coustomer.save({ session });
+      await coustomer.save();
+      // ({ session });
   
-      const user = await User.findById(UserID).session(session);
+      const user = await User.findById(UserID)
+      // .session(session);
       if (user) {
         const emailSubject = 'Order Confirmation';
         const emailText = `Dear ${user.name},\n\nThank you for your order of ${quantity} ${product.name}(s). Your total price is ${totalPrice}.\n\nBest regards,\nYour Company`;
@@ -61,8 +67,8 @@ class CoustomerController {
         // sendEmail(user.email, emailSubject, emailText)
       }
   
-     await session.commitTransaction();
-      session.endSession();
+    //  await session.commitTransaction();
+    //   session.endSession();
   
       return res.status(200).json({
         timeStamp: moment().unix(),
@@ -70,8 +76,8 @@ class CoustomerController {
         coustomer: coustomer,
       });
     } catch (error: any) {
-      await session.abortTransaction();
-      session.endSession();
+      // await session.abortTransaction();
+      // session.endSession();
       console.error(error.message);
       return res.status(500).json({
         message: "Something went wrong",
@@ -81,37 +87,40 @@ class CoustomerController {
   };
 
     public cancelOrder = async (req: Request, res: Response) => {
-      const session = await mongoose.startSession();
-      session.startTransaction();
+      // const session = await mongoose.startSession();
+      // session.startTransaction();
       try {
         const orderId = req.params.id
  
     
         if (!mongoose.Types.ObjectId.isValid(orderId)) {
-          await session.abortTransaction();
-          session.endSession();
+          // await session.abortTransaction();
+          // session.endSession();
           return res.status(400).json({ msg: "Invalid order ID format" });
         }
     
-        const customerOrder = await Coustomer.findById(orderId).populate('ProductID UserID').session(session);
+        const customerOrder = await Coustomer.findById(orderId).populate('ProductID UserID')
+        // .session(session);
 
         if (!customerOrder) { 
-          await session.abortTransaction();
-          session.endSession();
+          // await session.abortTransaction();
+          // session.endSession();
           return res.status(404).json({ message: "Order not found" });
         }
     
-        const product = await Product.findById(customerOrder.ProductID).session(session);
+        const product = await Product.findById(customerOrder.ProductID)
+        // .session(session);
        
     
         if (!product) {
-          await session.abortTransaction();
-          session.endSession();
+          // await session.abortTransaction();
+          // session.endSession();
           return res.status(400).json({ message: "Product not available" });
         }
 
         product.quantity += customerOrder.quantity;
-        await product.save({ session });
+        await product.save()
+        // ({ session });
     
 
         const user = await User.findById(customerOrder.UserID);
@@ -119,10 +128,10 @@ class CoustomerController {
           const emailSubject = 'Order Cancellation';
           const emailText = `Dear ${user.name},\n\nYour order for ${customerOrder.quantity} ${product.name}(s) has been successfully cancelled. The total price of ${customerOrder.totalPrice} will be refunded to you.\n\nBest regards,\nShop Cart`;
     
-          // sendEmail(user.email, emailSubject, emailText);
+          sendEmail(user.email, emailSubject, emailText);
         }
-        await session.commitTransaction();
-        session.endSession();
+        // await session.commitTransaction();
+        // session.endSession();
         await Coustomer.findByIdAndDelete(orderId);
 
     
@@ -131,8 +140,8 @@ class CoustomerController {
           message: "Order successfully cancelled",
         });
       } catch (error: any) {
-        await session.abortTransaction();
-      session.endSession();
+      //   await session.abortTransaction();
+      // session.endSession();
         console.error(error.message);
         return res.status(500).json({
           message: "Something went wrong",
@@ -197,7 +206,7 @@ public deleteCoustomer = async (req:Request, res:Response)=>{
 
       const customers = await Coustomer.find(condition).select('name _id').populate([
         {path: 'UserID',select:'name'},
-        // {path: 'ProductID',select: 'name'},
+        {path: 'ProductID',select: 'name'},
 
       ])
 
@@ -246,7 +255,7 @@ public deleteCoustomer = async (req:Request, res:Response)=>{
         }
       ]);
   
-
+console.log("customers list ",customers)
       if (!customers || customers.length === 0) {
         return res.status(404).json({
           message: "This customer has not bought any product"
@@ -256,6 +265,7 @@ public deleteCoustomer = async (req:Request, res:Response)=>{
       const userName = customers[0].UserID.name;
   
       const products = customers.map(customer => ({
+        orderid : customer._id,
         name: customer.ProductID.name,
         price: customer.ProductID.price,
         image: customer.ProductID.image,

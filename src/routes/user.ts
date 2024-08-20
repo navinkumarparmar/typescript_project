@@ -64,7 +64,7 @@ const router = Router();
  *                   type: string
  *                   example: Duplicate email entry or invalid input
  */
-router.post('/create',  UserController.createUserWithPhone);
+router.post('/create',  UserController.createUser);
 
 /**
  * @swagger
