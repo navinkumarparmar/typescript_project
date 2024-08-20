@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import User from '../models/user';
+import { off } from 'process';
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const moment = require('moment');
@@ -21,8 +22,7 @@ class AuthController {
       }
 
       const user = await User.findOne({ email: email }).populate('UserRole','name');
-      console.log("user",user)
-
+      
       if (!user) {
         return res.status(401).json({
           message: "Username and password don't match",
@@ -95,6 +95,61 @@ class AuthController {
       });
     }
   };
+
+  public adminlogin = async(req: Request,res: Response,next: NextFunction)=>{
+    try {
+     const {email,password} = req.body;
+     if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+    const isadmin = await User.findOne({email}).populate([{
+      path: 'UserRole',
+      select: 'name',
+    }])
+    if(!isadmin){
+      return res.status(401).json({
+        message: "email is not connected any admin",
+    })
+  }
+    const isMatch = await bcrypt.compare(password, isadmin.password);
+    if(!isMatch){
+      return res.status(401).json({
+        message: "Invalid password",
+      })
+    }
+    if(isadmin.UserRole.name=='editor' ||isadmin.UserRole.name=='viewer' ){
+      return res.status(401).json({
+        message: "You are not an admin"
+    })
+  }
+         console.log("isMatch",isMatch);
+    const token = jwt.sign(
+      {
+        _id: isadmin._id,
+        name: isadmin.UserRole.name,
+        gender: isadmin.gender,
+        UserRole: isadmin.UserRole,
+        email: isadmin.email,
+      },
+      jwtSecretKey,
+      { expiresIn: '1d' }
+    );
+    return res.status(200).json({
+      timeStamp: moment().unix(),
+      message: "Successfully logged in",
+      token: token,
+      user: isadmin,
+    });
+    } catch (error:any) {
+      console.log(error.message);
+      return res.status(500).json({
+        message: "Something went wrong",
+        error: error.message,
+      });
+    }
+  }
 }
 
 export default new AuthController();
