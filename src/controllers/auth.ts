@@ -20,7 +20,8 @@ class AuthController {
         });
       }
 
-      const user = await User.findOne({ email: email });
+      const user = await User.findOne({ email: email }).populate('UserRole','name');
+      console.log("user",user)
 
       if (!user) {
         return res.status(401).json({

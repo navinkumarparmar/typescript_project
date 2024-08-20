@@ -195,9 +195,9 @@ public deleteCoustomer = async (req:Request, res:Response)=>{
         condition._id = req.params.id;
       }
 
-      const customers = await Coustomer.find(condition).populate([
+      const customers = await Coustomer.find(condition).select('name _id').populate([
         {path: 'UserID',select:'name'},
-        {path: 'ProductID',select: 'name'},
+        // {path: 'ProductID',select: 'name'},
 
       ])
 
