@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 const nodemailer = require('nodemailer');
 dotenv.config();
-
+console.log("abb")
 const URL = process.env.URL as string;
 console.log("url",URL)
 const connectDB = async (): Promise<void> => {
